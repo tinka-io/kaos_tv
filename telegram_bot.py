@@ -81,7 +81,7 @@ class ktv():
         msg = f'Welcome to KAOS TV, {user_name}!\n'
         msg += f'Share your fotos and videos now.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-        await ktv.write_conifg()
+        ktv.write_conifg()
         
     async def message_handler(self, update: Update, context: CallbackContext):
         with open("update.json", 'r', encoding="UTF-8") as fp:
