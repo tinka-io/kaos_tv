@@ -37,7 +37,7 @@ def play_all_media(folder = 'Media'):
         media = vlc.Media(file)
         player.set_media(media)
         player.play()
-        #player.set_fullscreen(True)
+        player.set_fullscreen(True)
         
         time.sleep(0.25)
         
