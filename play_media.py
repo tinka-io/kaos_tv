@@ -6,6 +6,15 @@ import logger as log
 
 player = vlc.MediaPlayer()
 
+def show_name(player, text):
+    m = vlc.VideoMarqueeOption
+    player.video_set_marquee_int(m.Enable, 1)
+    player.video_set_marquee_int(m.Size, 48)  # pixels
+    player.video_set_marquee_int(m.Position, 9)
+    player.video_set_marquee_int(8, 20) # m.marquee_X
+    player.video_set_marquee_int(9, 20) # m.marquee_Y
+    player.video_set_marquee_string(m.Text, text)
+        
 def play_all_media(folder = 'Media'):
     
     media_files = []
@@ -17,10 +26,15 @@ def play_all_media(folder = 'Media'):
         time.sleep(10)
 
     for file in media_files:    
+        
+        user_name = file.split('_')
+        user_name = user_name[2].split('.')
+        show_name(player, user_name[0])
+        
         media = vlc.Media(file)
         player.set_media(media)
         player.play()
-        player.set_fullscreen(True)
+        #player.set_fullscreen(True)
         
         time.sleep(0.25)
         
