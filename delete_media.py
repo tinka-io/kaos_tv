@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
 
+import logger as log
+
 def delete_all_media_older_than(folder = 'Media', max_age = 2):
     for dir_name, subdir_list, file_list in os.walk(folder):
         for file_name in file_list:
@@ -9,7 +11,7 @@ def delete_all_media_older_than(folder = 'Media', max_age = 2):
             mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
             
             if datetime.now() - mtime > timedelta(days=max_age):
-                
+                log.debug(f'delete: {file_path}')
                 os.remove(file_path)
 
 if __name__ == '__main__':
