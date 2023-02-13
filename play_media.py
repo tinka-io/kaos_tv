@@ -28,9 +28,12 @@ def play_all_media(folder = 'Media'):
     for file in media_files:    
         
         user_name = file.split('_')
-        user_name = user_name[2].split('.')
-        show_name(player, user_name[0])
-        
+        if(len(user_name) >= 3):
+            user_name = user_name[2].split('.')
+            show_name(player, user_name[0])
+        else: 
+            show_name(player, 'Uknown')
+            
         media = vlc.Media(file)
         player.set_media(media)
         player.play()
