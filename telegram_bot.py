@@ -75,7 +75,7 @@ class ktv():
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_says = update.message.text
         
-        user_name = update.message.from_user.user_name
+        user_name = update.message.from_user.first_name
         log.info(f'start from: {user_name}')
         
         msg = f'Welcome to KAOS TV, {user_name}!\n'
@@ -93,7 +93,7 @@ class ktv():
             chat_id=update.message.chat.id, text=update.message.text)
         
     async def photo(update: Update, context: CallbackContext):
-        user_name = update.message.from_user.user_name
+        user_name = update.message.from_user.first_name
         log.info(f'get Pic from: {user_name}')
         
         os.makedirs(ktv.pic_path, exist_ok=True)
@@ -107,7 +107,7 @@ class ktv():
         ktv.write_conifg()
         
     async def video(update: Update, context: CallbackContext):
-        user_name = update.message.from_user.user_name
+        user_name = update.message.from_user.first_name
         log.info(f'get Video from: {user_name}')
         
         
