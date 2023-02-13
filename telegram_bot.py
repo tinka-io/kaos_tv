@@ -75,10 +75,10 @@ class ktv():
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_says = update.message.text
         
-        first_name = update.message.from_user.first_name
-        log.info(f'start from: {first_name}')
+        user_name = update.message.from_user.user_name
+        log.info(f'start from: {user_name}')
         
-        msg = f'Welcome to KAOS TV, {first_name}!\n'
+        msg = f'Welcome to KAOS TV, {user_name}!\n'
         msg += f'Share your fotos and videos now.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
         await ktv.write_conifg()
@@ -93,29 +93,29 @@ class ktv():
             chat_id=update.message.chat.id, text=update.message.text)
         
     async def photo(update: Update, context: CallbackContext):
-        first_name = update.message.from_user.first_name
-        log.info(f'get Pic from: {first_name}')
+        user_name = update.message.from_user.user_name
+        log.info(f'get Pic from: {user_name}')
         
         os.makedirs(ktv.pic_path, exist_ok=True)
         file_id = update.message.photo[-1].file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.pic_path}/pic_{ktv.pic_index}.jpg")
+        await new_file.download_to_drive(f"{ktv.pic_path}/pic_{ktv.pic_index}_{user_name}.jpg")
         msg = f'Thank you for your picture, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
         ktv.pic_index += 1
         ktv.write_conifg()
         
     async def video(update: Update, context: CallbackContext):
-        first_name = update.message.from_user.first_name
-        log.info(f'get Video from: {first_name}')
+        user_name = update.message.from_user.user_name
+        log.info(f'get Video from: {user_name}')
         
         
         os.makedirs(ktv.vid_path, exist_ok=True)        
         file_id = update.message.video.file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.vid_path}/vid_{ktv.vid_index}.mp4")
+        await new_file.download_to_drive(f"{ktv.vid_path}/vid_{ktv.vid_index}_{user_name}.mp4")
         msg = f'Thank you for your video, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
         ktv.vid_index += 1
