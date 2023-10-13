@@ -1,0 +1,13 @@
+[Unit]
+Description=KAOS TV
+
+[Service]
+Type=exec
+Restart=always
+RestartSec=5s
+KillSignal=SIGINT
+Environment="TELEG_TOKEN=5982425133:AAEW7DiI7NG9JVPPaIZyCMj19cBW7xdZW1s"
+ExecStart=/home/ktv/miniconda3/envs/kaos_tv/bin/python /home/ktv/kaos_tv/main.py
+
+[Install]
+WantedBy=default.target

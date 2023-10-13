@@ -10,8 +10,10 @@ def delete_all_media_older_than(folder = 'Media', max_age = 2):
             file_path = os.path.join(dir_name, file_name)
             mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
             
+            print(f'{datetime.now() - mtime} > {timedelta(days=max_age)}')
+            
             if datetime.now() - mtime > timedelta(days=max_age):
-                log.debug(f'delete: {file_path}')
+                log.info(f'delete: {file_path}')
                 os.remove(file_path)
 
 if __name__ == '__main__':

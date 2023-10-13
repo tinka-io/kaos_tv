@@ -3,6 +3,7 @@ dependencies:
   - python=3.10
   - pip
   - pip:
+    # - python-telegram-bot -U --pre
       - python-telegram-bot --pre
       - python-telegram-bot[all]
       - python-vlc

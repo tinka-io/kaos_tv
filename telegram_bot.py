@@ -9,7 +9,8 @@ from os.path import exists
 
 from telegram.ext import *
 from telegram import Update
-import telegram
+
+# TODO https://github.com/ismaventuras/python-telegram-bot-service
 
 class ktv():
     NAME = "KAOSTV_bot"
@@ -17,18 +18,14 @@ class ktv():
     
     conf_file = "ktv.config.json"
     
-    pic_path = ""
-    pic_index = 0
+    media_path = ""
+    media_index = 0
     
-    vid_path = ""
-    vid_index = 0
     
     def __init__(self, folder = 'Media', max_age = 2):
-        log.info("Start Telegram Boot")
+        log.info("\tstart Telegram Boot")
         
-        ktv.pic_path = folder +'/Pic'
-        ktv.vid_path = folder +'/Video'
-        
+        ktv.media_path = folder       
         ktv.max_age = max_age
         
         if not exists(ktv.conf_file):
@@ -37,8 +34,7 @@ class ktv():
         else:
             log.debug("- read indexes")
             ktv.read_config() 
-            log.debug(f'-- pic: {ktv.pic_index}')
-            log.debug(f'-- vid: {ktv.vid_index}')
+            log.debug(f'-- media: {ktv.media_index}')
     
         application = ApplicationBuilder().token(ktv.TOKEN).build()
         
@@ -60,13 +56,11 @@ class ktv():
         with open(ktv.conf_file) as json_file:
             json_str = json_file.read()
             jd = json.loads(json_str)
-            ktv.pic_index = jd['pic']
-            ktv.vid_index = jd['video']
+            ktv.media_index = jd['media']
             
     def write_conifg():
         data = {
-            'pic' : ktv.pic_index,
-            'video' : ktv.vid_index
+            'media' : ktv.media_index,
         }
             
         with open(ktv.conf_file, 'w') as json_file:
@@ -96,14 +90,14 @@ class ktv():
         user_name = update.message.from_user.first_name
         log.info(f'get Pic from: {user_name}')
         
-        os.makedirs(ktv.pic_path, exist_ok=True)
+        os.makedirs(ktv.media_path, exist_ok=True)
         file_id = update.message.photo[-1].file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.pic_path}/pic_{ktv.pic_index}_{user_name}.jpg")
+        await new_file.download_to_drive(f"{ktv.media_path}/{ktv.media_index:04d}_pic_{user_name}.jpg")
         msg = f'Thank you for your picture, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-        ktv.pic_index += 1
+        ktv.media_index += 1
         ktv.write_conifg()
         
     async def video(update: Update, context: CallbackContext):
@@ -111,14 +105,14 @@ class ktv():
         log.info(f'get Video from: {user_name}')
         
         
-        os.makedirs(ktv.vid_path, exist_ok=True)        
+        os.makedirs(ktv.media_path, exist_ok=True)        
         file_id = update.message.video.file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.vid_path}/vid_{ktv.vid_index}_{user_name}.mp4")
+        await new_file.download_to_drive(f"{ktv.media_path}/{ktv.media_index:04d}_vid_{user_name}.mp4")
         msg = f'Thank you for your video, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-        ktv.vid_index += 1
+        ktv.media_index += 1
         ktv.write_conifg()
         
 

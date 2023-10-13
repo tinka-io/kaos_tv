@@ -4,9 +4,14 @@ import time
 import os
 import logger as log
 
-player = vlc.MediaPlayer()
-
-def show_name(player, text):
+def show_name(player, file_name):
+    user_name = file_name.split('_')
+    if(len(user_name) >= 3):
+        user_name = user_name[2].split('.')
+        text = user_name[0]
+    else: 
+        text = 'Unknown'
+            
     m = vlc.VideoMarqueeOption
     player.video_set_marquee_int(m.Enable, 1)
     player.video_set_marquee_int(m.Size, 48)  # pixels
@@ -15,8 +20,18 @@ def show_name(player, text):
     player.video_set_marquee_int(9, 20) # m.marquee_Y
     player.video_set_marquee_string(m.Text, text)
         
-def play_all_media(folder = 'Media'):
+active_window = 0
+player = vlc.MediaPlayer()
     
+stop_playing = False
+    
+def play_all_media(folder = 'Media'):
+    global active_window, player, stop_playing
+    
+    player_old = player
+    active_window = 0
+    player = vlc.MediaPlayer()
+            
     media_files = []
     for root, dirs, files in os.walk(folder):
         media_files += [os.path.join(root, file) for file in files]
@@ -24,26 +39,37 @@ def play_all_media(folder = 'Media'):
     if(media_files == []):
         log.warn("can't fine any Media Files")
         time.sleep(10)
-
-    for file in media_files:    
+    media_files.sort()
+    
+    for file in media_files:
+        if stop_playing:
+            return
+         
+        log.info(f'play media, {file}')
+        show_name(player, file)
         
-        user_name = file.split('_')
-        if(len(user_name) >= 3):
-            user_name = user_name[2].split('.')
-            show_name(player, user_name[0])
-        else: 
-            show_name(player, 'Uknown')
+        try:
+            player.set_fullscreen(True)
+            media = vlc.Media(file)
+            player.set_media(media)
+            player.play()
+                        
+            if(active_window == 0):
+                active_window = 1
+                time.sleep(0.25)
+                player_old.stop()
             
-        media = vlc.Media(file)
-        player.set_media(media)
-        player.play()
-        player.set_fullscreen(True)
-        
-        time.sleep(0.25)
-        
-        while player.is_playing():
-            pass
-
+        except:
+            log.error(f'can\'t play media, {file}')
+          
+        if file.endswith('.jpg'):
+            time.sleep(5)
+        else:
+            time.sleep(0.25)
+            while player.is_playing() and not stop_playing:
+                pass    
+    
 if __name__ == '__main__':
     while True:
         play_all_media()
+        #time.sleep(3)
