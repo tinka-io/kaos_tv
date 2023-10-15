@@ -1,7 +1,7 @@
 import os
 import logging
-
-logging.basicConfig(filename='kaos_tv.log',
+import pathes as path
+logging.basicConfig(filename=path.logging,
                     encoding='utf-8', 
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

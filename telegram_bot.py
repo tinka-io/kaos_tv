@@ -6,7 +6,7 @@ import os
 import logger as log
 import asyncio
 from os.path import exists
-
+import pathes as path
 from telegram.ext import *
 from telegram import Update
 
@@ -16,19 +16,14 @@ class ktv():
     NAME = "KAOSTV_bot"
     TOKEN = os.getenv('TELEG_TOKEN')
     
-    conf_file = "ktv.config.json"
+    media_index = 0    
     
-    media_path = ""
-    media_index = 0
-    
-    
-    def __init__(self, folder = 'Media', max_age = 2):
+    def __init__(self, max_age = 2):
         log.info("\tstart Telegram Boot")
         
-        ktv.media_path = folder       
         ktv.max_age = max_age
         
-        if not exists(ktv.conf_file):
+        if not exists(path.config):
             log.debug("- create new config file")
             ktv.write_conifg()
         else:
@@ -53,7 +48,7 @@ class ktv():
             log.exept("Can't connect to Telegram, maybe there is no Internet connection?")
         
     def read_config():
-        with open(ktv.conf_file) as json_file:
+        with open(path.config) as json_file:
             json_str = json_file.read()
             jd = json.loads(json_str)
             ktv.media_index = jd['media']
@@ -63,7 +58,7 @@ class ktv():
             'media' : ktv.media_index,
         }
             
-        with open(ktv.conf_file, 'w') as json_file:
+        with open(path.config, 'w') as json_file:
             json.dump(data, json_file)
             
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -90,11 +85,11 @@ class ktv():
         user_name = update.message.from_user.first_name
         log.info(f'get Pic from: {user_name}')
         
-        os.makedirs(ktv.media_path, exist_ok=True)
+        os.makedirs(path.media, exist_ok=True)
         file_id = update.message.photo[-1].file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.media_path}/{ktv.media_index:04d}_pic_{user_name}.jpg")
+        await new_file.download_to_drive(f"{path.media}/{ktv.media_index:04d}_pic_{user_name}.jpg")
         msg = f'Thank you for your picture, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
         ktv.media_index += 1
@@ -105,11 +100,11 @@ class ktv():
         log.info(f'get Video from: {user_name}')
         
         
-        os.makedirs(ktv.media_path, exist_ok=True)        
+        os.makedirs(path.media, exist_ok=True)        
         file_id = update.message.video.file_id
         new_file = await context.bot.get_file(file_id)
         
-        await new_file.download_to_drive(f"{ktv.media_path}/{ktv.media_index:04d}_vid_{user_name}.mp4")
+        await new_file.download_to_drive(f"{path.media}/{ktv.media_index:04d}_vid_{user_name}.mp4")
         msg = f'Thank you for your video, I will display it for {ktv.max_age} days.'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
         ktv.media_index += 1

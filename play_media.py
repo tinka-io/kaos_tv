@@ -3,6 +3,7 @@ import os
 import time
 import os
 import logger as log
+import pathes as path
 
 def show_name(player, file_name):
     user_name = file_name.split('_')
@@ -24,21 +25,24 @@ active_window = 0
 player = vlc.MediaPlayer()
     
 stop_playing = False
+
+screen_saver_files = []
+for root, dirs, files in os.walk(path.screen_saver):
+    screen_saver_files += [os.path.join(root, file) for file in files]
     
-def play_all_media(folder = 'Media'):
-    global active_window, player, stop_playing
+def play_all_media():
+    global active_window, player, stop_playing, screen_saver_files
     
     player_old = player
     active_window = 0
     player = vlc.MediaPlayer()
             
     media_files = []
-    for root, dirs, files in os.walk(folder):
+    for root, dirs, files in os.walk(path.media):
         media_files += [os.path.join(root, file) for file in files]
     
     if(media_files == []):
-        log.warn("can't fine any Media Files")
-        time.sleep(10)
+        media_files += screen_saver_files
     media_files.sort()
     
     for file in media_files:
@@ -65,7 +69,7 @@ def play_all_media(folder = 'Media'):
         if file.endswith('.jpg'):
             time.sleep(5)
         else:
-            time.sleep(0.25)
+            time.sleep(0.1)
             while player.is_playing() and not stop_playing:
                 pass    
     
