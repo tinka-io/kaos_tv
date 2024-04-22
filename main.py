@@ -7,6 +7,8 @@ import delete_media as dm
 import pathes as path
 
 run_player = False
+max_age = 2
+
 def stop_player():
     global run_player
     
@@ -26,7 +28,7 @@ def play_media():
             log.error("play_media crashed")
             
         try:
-            dm.delete_all_media_older_than(max_age=2)
+            dm.delete_all_media_older_than(max_age)
         except:
             log.error("delete_all_mdeia crashed")
     
@@ -39,7 +41,7 @@ if __name__ == '__main__':
     x.start()
     
     try:
-        tb.ktv(path.media)
+        tb.ktv(max_age)
     except:
         log.error("telegram bot crashed")
     
