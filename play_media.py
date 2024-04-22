@@ -4,7 +4,8 @@ import time
 import os
 import logger as log
 import pathes as path
-
+import setproctitle
+    
 def show_name(player, file_name):
     user_name = file_name.split('_')
     if(len(user_name) >= 3):
@@ -20,23 +21,17 @@ def show_name(player, file_name):
     player.video_set_marquee_int(8, 20) # m.marquee_X
     player.video_set_marquee_int(9, 20) # m.marquee_Y
     player.video_set_marquee_string(m.Text, text)
-        
-active_window = 0
-player = vlc.MediaPlayer()
-    
-stop_playing = False
 
 screen_saver_files = []
 for root, dirs, files in os.walk(path.screen_saver):
     screen_saver_files += [os.path.join(root, file) for file in files]
     
-def play_all_media():
-    global active_window, player, stop_playing, screen_saver_files
+def play_all_media(lock, index):
+    setproctitle.setproctitle(f'KAOS_TV_VLC_{index}')
+    global stop_playing, screen_saver_files
     
-    player_old = player
-    active_window = 0
     player = vlc.MediaPlayer()
-            
+    
     media_files = []
     for root, dirs, files in os.walk(path.media):
         media_files += [os.path.join(root, file) for file in files]
@@ -45,11 +40,9 @@ def play_all_media():
         media_files += screen_saver_files
     media_files.sort()
     
+    lock.acquire()
     for file in media_files:
-        if stop_playing:
-            return
-         
-        log.info(f'play media, {file}')
+
         show_name(player, file)
         
         try:
@@ -57,23 +50,24 @@ def play_all_media():
             media = vlc.Media(file)
             player.set_media(media)
             player.play()
-                        
-            if(active_window == 0):
-                active_window = 1
-                time.sleep(0.25)
-                player_old.stop()
+            log.info(f'{index} play media, {file}')
             
         except:
-            log.error(f'can\'t play media, {file}')
+            log.error(f'{index} can\'t play media, {file}')
           
         if file.endswith('.jpg'):
             time.sleep(5)
         else:
             time.sleep(0.1)
-            while player.is_playing() and not stop_playing:
-                pass    
+            while player.is_playing():
+                time.sleep(0.1)
+                pass
+    
+    log.debug(f'{index} player relase')
+    lock.release()
+    time.sleep(2.0)
     
 if __name__ == '__main__':
     while True:
-        play_all_media()
+        play_all_media(0)
         #time.sleep(3)
