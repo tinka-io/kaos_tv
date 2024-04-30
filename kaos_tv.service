@@ -4,6 +4,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+ExecStartPre=/bin/sleep 30
 Type=exec
 Restart=always
 RestartSec=5s
