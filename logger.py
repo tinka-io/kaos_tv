@@ -3,8 +3,8 @@ import logging
 import pathes as path
 logging.basicConfig(filename=path.logging,
                     encoding='utf-8', 
-                    level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                    level=logging.DEBUG,
+                    format='%(asctime)s \t %(name)s \t %(levelname)s \t %(message)s')
 def info(msg):
     print("info\t" +msg)
     logging.info(msg)
