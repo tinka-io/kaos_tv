@@ -29,9 +29,9 @@ While deployment, conda do this for us, later the kaos_tv systemd service.
 ### setup systemctl service
 To start the KAOS TV directly after booting, we setup a systemctl servie for the User ktv. 
 ```
-	cp kaos_tv.service /etc/systemd/system/
+	cp kaos_tv.service /home/ktv/.config/systemd/user/
 	chmod 744 start_ktv.sh
-	chmod 664 /etc/systemd/system/kaos_tv.service
+	chmod 664 /home/ktv/.config/systemd/user/kaos_tv.service/kaos_tv.service
 
 	systemctl --user daemon-reload
 	systemctl --user enable kaos_tv.service 
